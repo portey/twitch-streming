@@ -35,3 +35,5 @@ Redis will be good enough for realtime needs.
 ### Todo:
 - Add tests 
 - Add metrics
+- Improve logging
+- Improve twitch client in server 
