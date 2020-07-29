@@ -29,10 +29,19 @@ var errClientNotInitialized = errors.New("redis client: not initialized yet")
 // New returns the initialized Sink object.
 func NewRedis(ctx context.Context, cfg Config) (*Sink, error) {
 	log.Infof("PubSub init: addr=%s", cfg.Addr)
-	client := redis.NewClient(&redis.Options{
-		Addr:     cfg.Addr,
-		PoolSize: cfg.PoolSize,
-	})
+	opt, err := redis.ParseURL(cfg.Addr)
+	if err != nil {
+		return nil, err
+	}
+
+	opt.PoolSize = cfg.PoolSize
+	opt.Username = ""
+	client := redis.NewClient(opt)
+
+	err = client.Ping(ctx).Err()
+	if err != nil {
+		return nil, err
+	}
 
 	go func() {
 		<-ctx.Done()
@@ -43,11 +52,6 @@ func NewRedis(ctx context.Context, cfg Config) (*Sink, error) {
 		}
 		log.Info("close redis connection")
 	}()
-
-	err := client.Ping(ctx).Err()
-	if err != nil {
-		return nil, err
-	}
 
 	return &Sink{
 		client:  client,

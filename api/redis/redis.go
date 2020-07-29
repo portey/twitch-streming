@@ -30,10 +30,19 @@ var errClientNotInitialized = errors.New("redis client: not initialized yet")
 // New returns the initialized Observer object.
 func NewRedis(ctx context.Context, cfg Config) (*Observer, error) {
 	log.Infof("Cache init: addr=%s", cfg.Addr)
-	client := redis.NewClient(&redis.Options{
-		Addr:     cfg.Addr,
-		PoolSize: cfg.PoolSize,
-	})
+	opt, err := redis.ParseURL(cfg.Addr)
+	if err != nil {
+		return nil, err
+	}
+
+	opt.PoolSize = cfg.PoolSize
+	opt.Username = ""
+	client := redis.NewClient(opt)
+
+	err = client.Ping(ctx).Err()
+	if err != nil {
+		return nil, err
+	}
 
 	go func() {
 		<-ctx.Done()
@@ -44,11 +53,6 @@ func NewRedis(ctx context.Context, cfg Config) (*Observer, error) {
 		}
 		log.Info("close redis connection")
 	}()
-
-	err := client.Ping(ctx).Err()
-	if err != nil {
-		return nil, err
-	}
 
 	ps := client.Subscribe(ctx, cfg.Channel)
 	if _, err := ps.Receive(ctx); err != nil {
