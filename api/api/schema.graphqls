@@ -1,0 +1,30 @@
+type Mutation {
+    subscribeToStreamer(name: String!): Boolean!
+}
+
+type Query {
+    getSignedUrl: String!
+    eventsAggregatedByStreamer: [EventByStreamer!]!
+    exchangeToken(accessToken: String!): String!
+}
+
+type Subscription {
+    events(streamerName: String!): Event!
+}
+
+type EventByStreamer {
+    streamer: String!
+    count: Int!
+}
+
+enum EventType {
+    FOLLOW
+    SUBSCRIPTION
+}
+
+type Event {
+    id: ID!
+    subscriberName: String!
+    subscribedTo: String!
+    type: EventType
+}

@@ -1,0 +1,61 @@
+syntax = "proto3";
+package user_service_api;
+option go_package = ".;service";
+
+service TwitchStreamService {
+	rpc GetSignUrl (GetSignUrlRequest) returns (GetSignUrlResponse);
+	rpc ExchangeToken(ExchangeTokenRequest) returns (ExchangeTokenResponse);
+	rpc SubscribeToStreamer (SubscribeToStreamerRequest) returns (SubscribeToStreamerResponse);
+	rpc GetEventCountsAggregatedByStreamer (GetEventCountsAggregatedByStreamerRequest) returns (GetEventCountsAggregatedByStreamerResponse);
+	rpc GetEventCountsAggregatedByStreamerAndType (GetEventCountsAggregatedByStreamerAndTypeRequest) returns (GetEventCountsAggregatedByStreamerAndTypeResponse);
+}
+
+message GetSignUrlRequest {
+}
+
+message GetSignUrlResponse {
+	string url = 1;
+}
+
+message ExchangeTokenRequest {
+	string access_token = 1;
+}
+
+message ExchangeTokenResponse {
+	string access_token = 1;
+}
+
+message SubscribeToStreamerRequest {
+	string streamer_name = 1;
+}
+
+message SubscribeToStreamerResponse {
+
+}
+
+message GetEventCountsAggregatedByStreamerRequest {
+
+}
+
+message GetEventCountsAggregatedByStreamerResponse {
+	repeated Item items = 1;
+
+	message Item {
+		string streamer_name = 1;
+		int32 count = 2;
+	}
+}
+
+message GetEventCountsAggregatedByStreamerAndTypeRequest {
+
+}
+
+message GetEventCountsAggregatedByStreamerAndTypeResponse {
+	repeated Item items = 1;
+
+	message Item {
+		string streamer_name = 1;
+		string event_type = 2;
+		int32 count = 3;
+	}
+}
